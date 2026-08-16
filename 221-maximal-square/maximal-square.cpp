@@ -1,26 +1,36 @@
 class Solution {
 public:
+
+    int solve(vector<vector<char>>& matrix, int i, int j, vector<vector<int>>& dp) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        if(i >= m || j >= n) return 0;
+        if(matrix[i][j] == '0') return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+
+        int right = solve(matrix, i, j + 1, dp);
+        int down = solve(matrix, i + 1, j, dp);
+        int diagonal = solve(matrix, i + 1, j + 1, dp);
+
+        return dp[i][j] = 1 + min({right, down, diagonal});
+    }
+
     int maximalSquare(vector<vector<char>>& matrix) {
-        int rows = matrix.size();
-        int cols = matrix[0].size();
-        vector<vector<int>> dp(rows, vector<int>(cols, 0));
-        int maxSide = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (matrix[i][j] == '1') {
-                    if (i == 0 || j == 0) {
-                        dp[i][j] = 1;
-                    }
-                    else {
-                        dp[i][j] = min(
-                            dp[i - 1][j],
-                            min(dp[i][j - 1], dp[i - 1][j - 1])
-                        ) + 1;
-                    }
-                    maxSide = max(maxSide, dp[i][j]);
-                }
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        vector<vector<int>>dp(m, vector(n, -1));
+
+        int maxi = 0;
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                int side = solve(matrix, i, j, dp);
+                maxi = max(maxi, side);
             }
         }
-        return maxSide * maxSide;
+        return maxi * maxi;
     }
 };
